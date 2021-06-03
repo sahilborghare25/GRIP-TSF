@@ -1,1 +1,72 @@
+#Importing the required libraries in this notebook
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
 
+#Reading data 
+url = "http://bit.ly/w-data"
+data = pd.read_csv(url)
+
+#See the first 10 rows of the data
+data.head(10)
+
+# Visualizing the data 
+data.plot(x='Hours', y='Scores', style='o')  
+plt.title('Hours vs Percentage')  
+plt.xlabel('Hours Studied')  
+plt.ylabel('Percentage Score')  
+plt.show()
+
+#Attributes and Labels
+x = data.iloc[:, :-1].values  
+y = data.iloc[:, 1].values 
+
+#Splitting the data into training and testing sets
+from sklearn.model_selection import train_test_split  
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=0) 
+
+from sklearn.linear_model import LinearRegression  
+regressor = LinearRegression()  
+regressor.fit(x_train, y_train) 
+
+print("Training complete.")
+
+# Visualizing the regression line
+line = regressor.coef_*x + regressor.intercept_
+
+# Plotting for the test data
+plt.scatter(x, y)
+plt.plot(x, line);
+plt.show()
+
+print("Coefficient is :", regressor.coef_)
+print("Intercept is :", regressor.intercept_)
+
+# Predicting the scores on testing set
+y_pred = regressor.predict(x_test)
+
+# Comparing Actual vs Predicted values of y (for each x_test)
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})  
+df 
+
+#visualizing the Actual vs Predicted values 
+plt.scatter(x_test, y_test)
+plt.title('Actual values')
+plt.xlabel('x_test values')
+plt.ylabel('y_test values')
+plt.show()
+
+plt.scatter(x_test, y_pred)
+plt.title('Predicted values')
+plt.xlabel('x_test values')
+plt.ylabel('y_pred values')
+plt.show()
+
+#testing with my data
+hours=[[9.25]]
+predict=regressor.predict(hours)
+predict
+
+from sklearn import metrics  
+print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred)) 
